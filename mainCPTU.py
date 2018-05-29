@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 class CPTU(object):
 
     def __init__(self, plik):
         self.df = pd.read_csv(plik, delimiter=',')
+        self.df = self.df[['Depth(m)', 'qc', 'fs', 'u2', 'ta']]
         print('Zaimportowano pomyślnie')
         self.dd = 0.02
         self.a = 0.15
@@ -111,13 +113,35 @@ class CPTU(object):
 
         self.df['OCR'] = self.df.apply(lambda x: friction_ratio(x['Ic'], x['Qt']), axis=1)
 
+        return self.df
+
     def eksport(self):
         self.df.to_csv(path_or_buf='test_CPTU_wynik.csv')
 
+    def wykres(self, k1, k2, k3):
 
-Test = CPTU('test_CPTU.csv')
-Test.pokaz()
+        ylim = (self.df['Depth(m)'].max(), self.df['Depth(m)'].min())
 
-Test.interpreter()
+        f = plt.figure(figsize=(15,10))
+        ax1 = f.add_subplot(131)
+        ax2 = f.add_subplot(132)
+        ax3 = f.add_subplot(133)
 
-Test.eksport()
+        ax1.plot(self.df[k1], self.df['Depth(m)'], 'k-', linewidth=1.0)
+        ax1.set_ylim(ylim)
+        ax1.set(xlabel=k1, ylabel='Depth(m)')
+        ax1.grid(True)
+
+
+        ax2.plot(self.df[k2], self.df['Depth(m)'], 'k-', linewidth=1.0)
+        ax2.set_ylim(ylim)
+        ax2.set(xlabel=k2)
+        ax2.grid(True)
+
+
+        ax3.plot(self.df[k3], self.df['Depth(m)'], 'k-', linewidth=1.0)
+        ax3.set_ylim(ylim)
+        ax3.set(xlabel=k3)
+        ax3.grid(True)
+
+        plt.show()
